@@ -21,7 +21,7 @@ set wireless.radio1.country='PT'
 set wireless.radio1.band='5g'
 set wireless.radio1.channel='44'
 set wireless.radio1.htmode='HE80'
-set wireless.radio1.txpower='16'
+set wireless.radio1.txpower='6'
 set wireless.radio1.cell_density='1'
 
 set wireless.default_radio1.ieee80211w='2'
