@@ -122,6 +122,6 @@ jobs:
 
       - name: Clean up old releases
         run: |
-          gh api repos/${{ github.repository }}/releases --paginate --jq '.[6:] | .[] | "\(.id) \(.tag_name)"' | while read id tag; do
+          gh api repos/${{ github.repository }}/releases --paginate --jq '.[10:] | .[] | "\(.id) \(.tag_name)"' | while read id tag; do
             gh api -X DELETE "repos/${{ github.repository }}/releases/$id" && gh api -X DELETE "repos/${{ github.repository }}/git/refs/tags/$tag" 2>/dev/null ||:
           done
