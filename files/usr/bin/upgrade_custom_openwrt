@@ -6,15 +6,10 @@ else
   touch /var/run/upgrade_openwrt
   GITHUBREPOSITORY='XXXXXX/XXXXXX'
   eval "$(grep -m 1 DISTRIB_REVISION /etc/openwrt_release)"
-  if [ -z "$DISTRIB_REVISION" ]; then
-    echo "WARNING: can't find release version... proceed with caution!"
-    SYSUPGRADEFILE=$(curl -sS https://api.github.com/repos/${GITHUBREPOSITORY}/releases/latest | jq -r '.assets[] | select(.browser_download_url | test("sysupgrade")) | "\(.browser_download_url)"')
-  else
-    SYSUPGRADEFILE=$(curl -sS https://api.github.com/repos/${GITHUBREPOSITORY}/releases/latest | jq -r '.assets[] | select(.browser_download_url | test("sysupgrade")) | "\(.browser_download_url)"' | grep -v "$DISTRIB_REVISION")
-  fi
+  SYSUPGRADEFILE=$(curl -sS https://api.github.com/repos/${GITHUBREPOSITORY}/releases/latest | jq -r --arg exclude "$DISTRIB_REVISION" '.assets[] | select(.browser_download_url | contains("sysupgrade")) | select((($exclude | length) == 0) or (.browser_download_url | contains($exclude) | not)) | .browser_download_url')
 
   if [ -n "$SYSUPGRADEFILE" ]; then
-    SHA256SUMFILE=$(curl -sS https://api.github.com/repos/${GITHUBREPOSITORY}/releases/latest | jq -r '.assets[] | select(.browser_download_url | test("sha256sums")) | "\(.browser_download_url)"')
+    SHA256SUMFILE=$(curl -sS https://api.github.com/repos/${GITHUBREPOSITORY}/releases/latest | jq -r '.assets[] | select(.browser_download_url | contains("sha256sums")) | .browser_download_url')
     [ -n "$SHA256SUMFILE" ] && SHA256="$(curl -sL "$SHA256SUMFILE" | grep -m 1 sysupgrade)"
     [ -z "$SHA256" ] && SHA256="$(curl -sS https://api.github.com/repos/${GITHUBREPOSITORY}/releases/latest | jq -r '.assets[] | select(.browser_download_url | test("sysupgrade")) | "\(.digest)"' | sed -n 's/sha256\://p') ${SYSUPGRADEFILE##*/}"
 
