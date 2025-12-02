@@ -77,7 +77,7 @@ jobs:
           mv -v builder_repo/files ./
           sed -i 's|XXXXXX/XXXXXX|${{ github.repository }}|' ./files/usr/bin/upgrade_custom_openwrt || exit 1
           chmod 755 ./files/usr/bin/upgrade_custom_openwrt
-          sed -i 's/\<--disable-libgomp\>/--enable-libgomp/' toolchain/gcc/common.mk
+          patch -p1 -i builder_repo/openwrt.patch
           mv -v builder_repo/${{ env.CONFIG_FILE }} .config
           make defconfig
 
